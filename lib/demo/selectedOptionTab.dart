@@ -1,6 +1,7 @@
 import 'package:caloriescounter/caloriescounter/addFood.dart';
 import 'package:caloriescounter/caloriescounter/recipiesListSearchPage.dart';
 import 'package:caloriescounter/data/recipiesData.dart';
+import 'package:caloriescounter/jsonParsing/parse.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -23,6 +24,7 @@ class _SelectOptionTabState extends State<SelectOptionTab> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          title: Text('ADD YOUR FOOD'),
           actions: [
             Container(
               padding: EdgeInsets.all(10),
@@ -47,9 +49,9 @@ class _SelectOptionTabState extends State<SelectOptionTab> {
         ),
         body: Container(
           child: TabBarView(children: [
-            RecipiesListSearchPage(widget.gUser, widget.selectedDate,
-                widget.signOut, widget.userRecipeList),
-            Text('List vweiew'),
+            AddFood(widget.gUser, widget.selectedDate, widget.signOut,
+                widget.userRecipeList),
+            Parse(),
           ]),
         ),
       ),

@@ -1,10 +1,6 @@
-import 'package:caloriescounter/caloriescounter/AddDailyIntake.dart';
-import 'package:caloriescounter/caloriescounter/addFood.dart';
-import 'package:caloriescounter/caloriescounter/editRecipiePage.dart';
 import 'package:caloriescounter/data/recipiesData.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class RecipiesListSearchPage extends StatefulWidget {
@@ -12,9 +8,9 @@ class RecipiesListSearchPage extends StatefulWidget {
   GoogleSignInAccount gUser;
   List<Recipies> userRecipeList;
   DateTime selectedDate;
-  //Function setRecipeValue;
-  RecipiesListSearchPage(
-      this.gUser, this.selectedDate, this.signOut, this.userRecipeList);
+  Function setRecipeValue;
+  RecipiesListSearchPage(this.gUser, this.selectedDate, this.signOut,
+      this.userRecipeList, this.setRecipeValue);
 
   @override
   _RecipiesListSearchPageState createState() => _RecipiesListSearchPageState();
@@ -36,19 +32,6 @@ class _RecipiesListSearchPageState extends State<RecipiesListSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (contex) => AddFood(
-                      widget.gUser,
-                      widget.selectedDate,
-                      widget.signOut,
-                      widget.userRecipeList)));
-        },
-      ),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
@@ -59,7 +42,11 @@ class _RecipiesListSearchPageState extends State<RecipiesListSearchPage> {
             TextField(
               onChanged: (value) => _runFilter(value),
               decoration: InputDecoration(
-                  labelText: 'Search', suffixIcon: Icon(Icons.search)),
+                  contentPadding: EdgeInsets.all(5),
+                  labelText: 'Search',
+                  suffixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10))),
             ),
             SizedBox(
               height: 10,
@@ -69,63 +56,114 @@ class _RecipiesListSearchPageState extends State<RecipiesListSearchPage> {
                   ? ListView.builder(
                       itemCount: _foundRecipe.length,
                       itemBuilder: (context, index) => InkWell(
-                        child: InkWell(
-                          child: Slidable(
-                            actionPane: SlidableBehindActionPane(),
-                            actionExtentRatio: 0.25,
-                            child: ListTile(
-                              title: Text(
-                                _foundRecipe[index].name.toString(),
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        _foundRecipe[index].name.toString(),
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      Text(
+                                        _foundRecipe[index].grams.toString() +
+                                            'gram',
+                                        style: TextStyle(fontSize: 10),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * .3,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        ' ',
+                                        style: TextStyle(
+                                            color: Colors.blue.shade900),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'C  :  ' +
+                                                _foundRecipe[index]
+                                                    .calories
+                                                    .toString() +
+                                                'g',
+                                            style: TextStyle(
+                                                color: Colors.blue.shade900,
+                                                fontSize: 10),
+                                          ),
+                                          Text(
+                                            'C  :  ' +
+                                                _foundRecipe[index]
+                                                    .carbon
+                                                    .toString() +
+                                                'g',
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                          SizedBox(
+                                            width: 15,
+                                          ),
+                                          Text(
+                                            'P  :  ' +
+                                                _foundRecipe[index]
+                                                    .carbon
+                                                    .toString() +
+                                                'g',
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.blueAccent),
+                                          ),
+                                          SizedBox(
+                                            width: 15,
+                                          ),
+                                          Text(
+                                            'F : ' +
+                                                _foundRecipe[index]
+                                                    .fats
+                                                    .toString() +
+                                                'g',
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.orangeAccent),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ],
                               ),
-                              subtitle:
-                                  Text(_foundRecipe[index].grams.toString()),
-                            ),
-                            secondaryActions: [
-                              IconSlideAction(
-                                caption: 'Edit Recipe',
-                                color: Colors.blue,
-                                icon: Icons.edit,
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (contex) => EditRecipiePage(
-                                              widget.gUser,
-                                              _foundRecipe[index],
-                                              _foundRecipe[index].reference.id,
-                                              widget.selectedDate,
-                                              widget.signOut)));
-                                },
+                              SizedBox(
+                                width: 100,
                               ),
-                              IconSlideAction(
-                                caption: 'Delete Recipe',
-                                color: Colors.red,
-                                icon: Icons.delete,
-                                onTap: () {
-                                  deleteRecpe(_foundRecipe[index].reference.id);
-                                },
-                              ),
+                              Divider()
                             ],
                           ),
                         ),
                         onLongPress: () {},
                         onTap: () {
-                          // widget.setRecipeValue(
-                          //     _foundRecipe[index].name,
-                          //     _foundRecipe[index].calories,
-                          //     _foundRecipe[index].grams,
-                          //     _foundRecipe[index].carbon,
-                          //     _foundRecipe[index].protines,
-                          //     _foundRecipe[index].fats);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (contex) => AddDailyInTake(
-                                      _foundRecipe[index].reference.id,
-                                      widget.gUser,
-                                      _foundRecipe[index],
-                                      widget.selectedDate,
-                                      widget.signOut)));
+                          widget.setRecipeValue(
+                              _foundRecipe[index].name,
+                              _foundRecipe[index].calories,
+                              _foundRecipe[index].grams,
+                              _foundRecipe[index].carbon,
+                              _foundRecipe[index].protines,
+                              _foundRecipe[index].fats);
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (contex) => AddRecipeToDailyIntake(
+                          //               widget.gUser,
+                          //               widget.signOut,
+                          //               widget.selectedDate,
+                          //               _foundRecipe[index].reference.id,
+                          //               _foundRecipe[index],
+                          //             )));
                           print("On clicked on a particular recipe");
                           print('--------------------' +
                               _foundRecipe[index].name.toString());

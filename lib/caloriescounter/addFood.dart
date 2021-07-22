@@ -42,6 +42,8 @@ class _AddFoodState extends State<AddFood> {
       tgram = 0,
       tprot = 0;
 
+  int __gram = 0, __cal = 0, __carb = 0, __fat = 0, __prot = 0;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -70,255 +72,201 @@ class _AddFoodState extends State<AddFood> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Daily Intake' + widget.selectedDate.toString()),
-          actions: [
-            Container(
-              padding: EdgeInsets.all(10),
-              child: InkWell(
-                child: Icon(Icons.home),
-                onTap: () {
-                  widget.signOut();
-                },
-              ),
-            )
-          ],
-        ),
         body: Container(
           child: Container(
             child: Column(
               children: [
-                // Expanded(
-                //     flex: 1,
-                //     child: Container(
-                //         // child:
-                //         // RecipiesListSearchPage(
-                //         //     widget.gUser,
-                //         //     widget.selectedDate,
-                //         //     setRecipeValue,
-                //         //     widget.signOut,
-                //         //     widget.userRecipeList)
-                //         )),
-                // SizedBox(
-                //   height: 10,
-                // ),
                 Expanded(
-                    flex: 2,
+                    flex: 6,
+                    child: Container(
+                        child: RecipiesListSearchPage(
+                            widget.gUser,
+                            widget.selectedDate,
+                            widget.signOut,
+                            widget.userRecipeList,
+                            setRecipeValue))),
+                SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                    flex: 4,
                     child: Container(
                       padding: EdgeInsets.all(5),
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
                             Container(
-                              child: Text('Add your Food'),
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text('Recipe Name'),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: Text('Recipe Name : '),
                                   ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 50,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(top: 8, right: 10),
-                                    child: TextField(
-                                      controller: nameController,
-                                      onChanged: (String val) {
-                                        setState(() {
-                                          name = val;
-                                        });
-                                        validate();
-                                      },
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10))),
+                                  Expanded(
+                                      child: Container(
+                                          padding: EdgeInsets.all(10),
+                                          child: Text(
+                                            nameController.text,
+                                            style: TextStyle(fontSize: 18),
+                                          ))),
+                                  SizedBox(
+                                    height: 40,
+                                    width: 60,
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: 20,
+                                      child: TextField(
+                                        textAlign: TextAlign.center,
+                                        controller: gramsController,
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (String val) {
+                                          setState(() {
+                                            __gram = int.parse(val);
+                                          });
+                                          validate();
+                                          onGramchange();
+                                        },
+                                        decoration: InputDecoration(
+                                            contentPadding: EdgeInsets.all(10),
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10))),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'Grams',
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              ),
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text('Grams'),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 50,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        left: 50, top: 8, right: 10),
-                                    child: TextField(
-                                      controller: gramsController,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (String val) {
-                                        setState(() {
-                                          grams = int.parse(val);
-                                        });
-                                        validate();
-                                      },
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10))),
+                            Center(
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                child: Row(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        CircleAvatar(
+                                            backgroundColor: Colors.redAccent,
+                                            radius: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.08,
+                                            child: Text(
+                                              caloriesController.text,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
+                                            )),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Container(
+                                          child: Text('Calories',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black)),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text('Carbon'),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 50,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        left: 50, top: 8, right: 10),
-                                    child: TextField(
-                                      controller: carbonController,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (String val) {
-                                        setState(() {
-                                          carbon = int.parse(val);
-                                        });
-                                        validate();
-                                      },
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10))),
+                                    SizedBox(
+                                      width: 15,
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text('Protiens'),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 50,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        left: 50, top: 8, right: 10),
-                                    child: TextField(
-                                      controller: protiensController,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (String val) {
-                                        setState(() {
-                                          protiens = int.parse(val);
-                                        });
-                                        validate();
-                                      },
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10))),
+                                    Column(
+                                      children: [
+                                        CircleAvatar(
+                                            backgroundColor: Colors.redAccent,
+                                            radius: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.08,
+                                            child: Text(
+                                              carbonController.text,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
+                                            )),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Container(
+                                          child: Text('Carbs',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black)),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text('Calories'),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 50,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        left: 50, top: 8, right: 10),
-                                    child: TextField(
-                                      controller: caloriesController,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (String val) {
-                                        setState(() {
-                                          calories = int.parse(val);
-                                        });
-                                        validate();
-                                      },
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10))),
+                                    SizedBox(
+                                      width: 15,
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text('Fat'),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 50,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        left: 50, top: 8, right: 10),
-                                    child: TextField(
-                                      controller: fatsController,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (String val) {
-                                        setState(() {
-                                          fats = int.parse(val);
-                                        });
-                                        validate();
-                                      },
-                                      decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10))),
+                                    Column(
+                                      children: [
+                                        CircleAvatar(
+                                            backgroundColor:
+                                                Colors.yellowAccent,
+                                            radius: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.08,
+                                            child: Text(
+                                              fatsController.text,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.black),
+                                            )),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Container(
+                                          child: Text('Fat',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black)),
+                                        ),
+                                      ],
                                     ),
-                                  ),
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                    Column(
+                                      children: [
+                                        CircleAvatar(
+                                            backgroundColor:
+                                                Colors.redAccent[700],
+                                            radius: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.08,
+                                            child: Text(
+                                              protiensController.text,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
+                                            )),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Container(
+                                          child: Text('Protiens',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black)),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
@@ -435,7 +383,7 @@ class _AddFoodState extends State<AddFood> {
     });
   }
 
-  void onGramchange(int gram) {
+  void onGramchange() {
     int __gram = 0, __cal = 0, __carb = 0, __fat = 0, __prot = 0;
     setState(() {
       __gram = int.parse(gramsController.text);
