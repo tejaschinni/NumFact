@@ -1,6 +1,7 @@
 import 'package:caloriescounter/caloriescounter/addFood.dart';
 import 'package:caloriescounter/caloriescounter/recipiesListSearchPage.dart';
 import 'package:caloriescounter/data/recipiesData.dart';
+import 'package:caloriescounter/jsonParsing/libraryFood.dart';
 import 'package:caloriescounter/jsonParsing/parse.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -51,7 +52,7 @@ class _SelectOptionTabState extends State<SelectOptionTab> {
           child: TabBarView(children: [
             AddFood(widget.gUser, widget.selectedDate, widget.signOut,
                 widget.userRecipeList),
-            Parse(),
+            LibraryFodd(),
           ]),
         ),
       ),

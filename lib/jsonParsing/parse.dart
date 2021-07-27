@@ -5,149 +5,79 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-Future<List<Food>> fetchFoods(http.Client client) async {
-  final response = await client.get(Uri.parse(
-      'https://raw.githubusercontent.com/tejaschinni/Demo/master/lib/lib/food.json'));
+class ParseJson extends StatefulWidget {
+  const ParseJson({Key? key}) : super(key: key);
 
-  // Use the compute function to run parseFoods in a separate isolate.
-  return compute(parseFoods, response.body);
+  @override
+  _ParseJsonState createState() => _ParseJsonState();
 }
 
-// A function that converts a response body into a List<Food>.
-List<Food> parseFoods(String responseBody) {
-  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+class _ParseJsonState extends State<ParseJson> {
+// do this in dashboard page and then send it to recipies list view
+  List<Photo> photos = [];
 
-  return parsed.map<Food>((json) => Food.fromJson(json)).toList();
+  Future<void> getList(http.Client client) async {
+    final response = await client
+        .get(Uri.parse('https://jsonplaceholder.typicode.com/photos'));
+
+    setState(() {
+      photos = (json.decode(response.body) as List)
+          .map((data) => Photo.fromJson(data))
+          .toList();
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getList(http.Client());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              print(photos[4].title);
+            },
+          ),
+          body: photos.length < 0
+              ? CircularProgressIndicator()
+              : ListView.builder(
+                  itemCount: photos.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      child: Text(photos[index].title),
+                    );
+                  })),
+    );
+  }
 }
 
-class Food {
-  final String gram;
-  final String calories;
-  final String fats;
-  final String carbon;
-  final String protein;
-  final String name;
+class Photo {
+  final int albumId;
+  final int id;
+  final String title;
+  final String url;
+  final String thumbnailUrl;
 
-  Food({
-    required this.gram,
-    required this.calories,
-    required this.fats,
-    required this.carbon,
-    required this.protein,
-    required this.name,
+  Photo({
+    required this.albumId,
+    required this.id,
+    required this.title,
+    required this.url,
+    required this.thumbnailUrl,
   });
 
-  factory Food.fromJson(Map<String, dynamic> json) {
-    return Food(
-      gram: json['gram'] as String,
-      calories: json['calories'] as String,
-      fats: json['fats'] as String,
-      protein: json['protein'] as String,
-      carbon: json['carbon'] as String,
-      name: json['name'] as String,
-    );
-  }
-}
-
-class Parse extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<List<Food>>(
-        future: fetchFoods(http.Client()),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-
-          return snapshot.hasData
-              ? FoodList(Foods: snapshot.data!)
-              : Center(child: CircularProgressIndicator());
-        },
-      ),
-    );
-  }
-}
-
-class FoodList extends StatelessWidget {
-  final List<Food> Foods;
-
-  FoodList({Key? key, required this.Foods}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: Foods.length,
-      itemBuilder: (context, index) {
-        return Container(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        child: Text(
-                          Foods[index].name,
-                          style: TextStyle(fontSize: 10),
-                        ),
-                      ),
-                      Text(
-                        Foods[index].gram + 'gram',
-                        style: TextStyle(fontSize: 10),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * .3,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        ' ',
-                        style: TextStyle(color: Colors.blue.shade900),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'C  :  ' + Foods[index].calories + 'g',
-                            style: TextStyle(
-                                color: Colors.blue.shade900, fontSize: 10),
-                          ),
-                          Text(
-                            'C  :  ' + Foods[index].carbon + 'g',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          // Text(
-                          //   'P  :  ' + Foods[index].carbon + 'g',
-                          //   style: TextStyle(
-                          //       fontSize: 10, color: Colors.blueAccent),
-                          // ),
-                          // SizedBox(
-                          //   width: 15,
-                          // ),
-                          // Text(
-                          //   'F : ' + Foods[index].fats + 'g',
-                          //   style: TextStyle(
-                          //       fontSize: 10, color: Colors.orangeAccent),
-                          // ),
-                        ],
-                      )
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: 100,
-              ),
-              Divider()
-            ],
-          ),
-        );
-      },
+  factory Photo.fromJson(Map<String, dynamic> json) {
+    return Photo(
+      albumId: json['albumId'] as int,
+      id: json['id'] as int,
+      title: json['title'] as String,
+      url: json['url'] as String,
+      thumbnailUrl: json['thumbnailUrl'] as String,
     );
   }
 }
