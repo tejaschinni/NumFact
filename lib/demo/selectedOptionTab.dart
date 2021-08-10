@@ -1,5 +1,7 @@
 import 'package:caloriescounter/caloriescounter/addFood.dart';
+import 'package:caloriescounter/caloriescounter/createMealPage.dart';
 import 'package:caloriescounter/caloriescounter/recipiesListSearchPage.dart';
+import 'package:caloriescounter/data/food.dart';
 import 'package:caloriescounter/data/recipiesData.dart';
 import 'package:caloriescounter/jsonParsing/libraryFood.dart';
 import 'package:caloriescounter/jsonParsing/parse.dart';
@@ -10,9 +12,10 @@ class SelectOptionTab extends StatefulWidget {
   Function signOut;
   GoogleSignInAccount gUser;
   DateTime selectedDate;
+  List<Food> food;
   List<Recipies> userRecipeList;
-  SelectOptionTab(
-      this.gUser, this.selectedDate, this.signOut, this.userRecipeList);
+  SelectOptionTab(this.gUser, this.selectedDate, this.signOut,
+      this.userRecipeList, this.food);
 
   @override
   _SelectOptionTabState createState() => _SelectOptionTabState();
@@ -22,7 +25,7 @@ class _SelectOptionTabState extends State<SelectOptionTab> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: Text('ADD YOUR FOOD'),
@@ -45,6 +48,9 @@ class _SelectOptionTabState extends State<SelectOptionTab> {
               Tab(
                 text: 'librarie',
               ),
+              Tab(
+                text: 'Create Meal',
+              ),
             ],
           ),
         ),
@@ -52,7 +58,10 @@ class _SelectOptionTabState extends State<SelectOptionTab> {
           child: TabBarView(children: [
             AddFood(widget.gUser, widget.selectedDate, widget.signOut,
                 widget.userRecipeList),
-            LibraryFodd(),
+            LibraryFodd(
+                widget.food, widget.gUser, widget.selectedDate, widget.signOut),
+            CreateMealPage(widget.food, widget.gUser, widget.selectedDate,
+                widget.signOut, widget.userRecipeList)
           ]),
         ),
       ),

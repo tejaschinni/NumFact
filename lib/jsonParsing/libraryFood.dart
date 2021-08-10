@@ -2,11 +2,16 @@ import 'dart:convert';
 
 import 'package:caloriescounter/data/food.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 class LibraryFodd extends StatefulWidget {
-  const LibraryFodd({Key? key}) : super(key: key);
+  Function signOut;
+  GoogleSignInAccount gUser;
+  DateTime selectedDate;
+  List<Food> foodList;
+  LibraryFodd(this.foodList, this.gUser, this.selectedDate, this.signOut);
 
   @override
   _LibraryFoddState createState() => _LibraryFoddState();
@@ -28,27 +33,6 @@ class _LibraryFoddState extends State<LibraryFodd> {
       tgram = ' ',
       tprot = ' ';
 
-  Future<void> getList(http.Client client) async {
-    final response = await client.get(Uri.parse(
-        'https://raw.githubusercontent.com/tejaschinni/caloriecounter/main/food.json'));
-
-    setState(() {
-      food = (json.decode(response.body) as List)
-          .map((data) => Food.fromJson(data))
-          .toList();
-      for (int i = 0; i < food.length; i++) {
-        Food f = Food(
-            gram: food[i].gram,
-            calories: food[i].calories,
-            fats: food[i].fats,
-            protein: food[i].protein,
-            carbon: food[i].carbon,
-            name: food[i].name);
-        foundfood.add(f);
-      }
-    });
-  }
-
   getfoood() {
     for (int i = 0; i < food.length; i++) {
       setState(() {
@@ -68,9 +52,8 @@ class _LibraryFoddState extends State<LibraryFodd> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getList(http.Client());
 
-    foundfood = food;
+    foundfood = widget.foodList;
   }
 
   @override
@@ -103,9 +86,13 @@ class _LibraryFoddState extends State<LibraryFodd> {
                     return Container(
                       child: Column(
                         children: [
-                          Text(
-                            foundfood[index].name.toString(),
-                            style: TextStyle(fontSize: 16),
+                          Row(
+                            children: [
+                              Text(
+                                foundfood[index].name.toString(),
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
                           ),
                           Row(
                             children: [
@@ -193,9 +180,9 @@ class _LibraryFoddState extends State<LibraryFodd> {
     List<Food> results = [];
     if (enteredKeyword.isEmpty) {
       // if the search field is empty or only contains white-space, we'll display all users
-      results = food;
+      results = widget.foodList;
     } else {
-      results = food
+      results = widget.foodList
           .where((user) =>
               user.name.toLowerCase().contains(enteredKeyword.toLowerCase()))
           .toList();

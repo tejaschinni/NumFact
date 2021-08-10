@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:caloriescounter/caloriescounter/addFood.dart';
 import 'package:caloriescounter/caloriescounter/flutterDateTime.dart';
 import 'package:caloriescounter/caloriescounter/nutritionPerDay.dart';
 import 'package:caloriescounter/caloriescounter/userRegisterPage.dart';
+import 'package:caloriescounter/data/food.dart';
 import 'package:caloriescounter/data/recipiesData.dart';
 import 'package:caloriescounter/demo/selectedOptionTab.dart';
 import 'package:caloriescounter/signInPage.dart';
@@ -11,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:http/http.dart' as http;
 
 class DashBoardPage extends StatefulWidget {
   Function signOut;
@@ -29,6 +33,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
       RefreshController(initialRefresh: false);
 
   List<Recipies> userRecipieList = [];
+  List<Food> foods = [];
 
   DateTime _selectedDate =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
@@ -42,7 +47,8 @@ class _DashBoardPageState extends State<DashBoardPage> {
     super.initState();
     _getDateTime();
     _readUserRecipeList();
-    _readUser();
+    getList(http.Client());
+    // _readUser();
   }
 
   @override
@@ -55,48 +61,52 @@ class _DashBoardPageState extends State<DashBoardPage> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => SelectOptionTab(widget.gUser,
-                          _selectedDate, widget.signOut, userRecipieList)));
+                      builder: (context) => SelectOptionTab(
+                          widget.gUser,
+                          _selectedDate,
+                          widget.signOut,
+                          userRecipieList,
+                          foods)));
             });
           },
         ),
-        appBar: AppBar(
-          title: Text('View Data'),
-          actions: [
-            Center(
-              child: Container(
-                padding: EdgeInsets.all(5),
-                child: InkWell(
-                  child: Icon(Icons.person),
-                  onTap: () {
-                    widget.signOut();
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (contex) => SignInPage()));
-                  },
-                ),
-              ),
-            ),
-            Center(
-              child: Container(
-                padding: EdgeInsets.all(5),
-                child: InkWell(
-                  child: Icon(Icons.smart_display),
-                  onTap: () {
-                    print(userRecipieList);
-                    // Navigator.pushReplacement(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (contex) => ListViewSearchBar(
-                    //             widget.gUser,
-                    //             widget.signOut,
-                    //             userRecipieList,
-                    //             _selectedDate)));
-                  },
-                ),
-              ),
-            )
-          ],
-        ),
+        // appBar: AppBar(
+        //   title: Text('View Data'),
+        //   actions: [
+        //     Center(
+        //       child: Container(
+        //         padding: EdgeInsets.all(5),
+        //         child: InkWell(
+        //           child: Icon(Icons.person),
+        //           onTap: () {
+        //             widget.signOut();
+        //             Navigator.pushReplacement(context,
+        //                 MaterialPageRoute(builder: (contex) => SignInPage()));
+        //           },
+        //         ),
+        //       ),
+        //     ),
+        //     Center(
+        //       child: Container(
+        //         padding: EdgeInsets.all(5),
+        //         child: InkWell(
+        //           child: Icon(Icons.smart_display),
+        //           onTap: () {
+        //             print(userRecipieList);
+        //             // Navigator.pushReplacement(
+        //             //     context,
+        //             //     MaterialPageRoute(
+        //             //         builder: (contex) => ListViewSearchBar(
+        //             //             widget.gUser,
+        //             //             widget.signOut,
+        //             //             userRecipieList,
+        //             //             _selectedDate)));
+        //           },
+        //         ),
+        //       ),
+        //     )
+        //   ],
+        // ),
         body:
             // isWorking
             //     ? Center(
@@ -146,7 +156,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
                                   child: FlutterDateTimeDemo(
                                       startDateTime, setDateTime))),
                           Expanded(
-                              flex: 4,
+                              flex: 3,
                               child: Container(
                                 padding: EdgeInsets.all(10),
                                 child: food.length == 0
@@ -290,8 +300,8 @@ class _DashBoardPageState extends State<DashBoardPage> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (contex) => UserRegisterPage(
-                    widget.gUser, widget.signOut, startDateTime)));
+                builder: (contex) =>
+                    UserRegisterPage(widget.gUser, widget.signOut)));
       }
     });
   }
@@ -321,5 +331,16 @@ class _DashBoardPageState extends State<DashBoardPage> {
     });
 
     print('--------sss-----------' + _selectedDate.toString());
+  }
+
+  Future<void> getList(http.Client client) async {
+    final response = await client.get(Uri.parse(
+        'https://raw.githubusercontent.com/tejaschinni/caloriecounter/main/food.json'));
+
+    setState(() {
+      foods = (json.decode(response.body) as List)
+          .map((data) => Food.fromJson(data))
+          .toList();
+    });
   }
 }

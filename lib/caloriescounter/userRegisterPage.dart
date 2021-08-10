@@ -1,24 +1,32 @@
+import 'package:caloriescounter/caloriescounter/homePage.dart';
 import 'package:caloriescounter/signInPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class UserRegisterPage extends StatefulWidget {
   Function signOut;
   GoogleSignInAccount gUser;
-  DateTime startDate;
-  UserRegisterPage(this.gUser, this.signOut, this.startDate);
+  //DateTime selectedDate;
+
+  UserRegisterPage(this.gUser, this.signOut);
   @override
   _UserRegisterPageState createState() => _UserRegisterPageState();
 }
 
 class _UserRegisterPageState extends State<UserRegisterPage> {
   TextEditingController userNameController = TextEditingController();
-  TextEditingController mobileController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
   TextEditingController weigthController = TextEditingController();
 
-  String name = '';
+  String name = '', gender = '';
   int weigth = 0, mobile = 0;
+  double height = 0.0;
+
+  bool validator = true;
+  DateTime dateTime =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   CollectionReference collection =
       FirebaseFirestore.instance.collection('caloriecounter');
@@ -27,8 +35,21 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.startDate =
-        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    setState(() {
+      // userNameController.text = widget.userData.name.toString();
+      // weigthController.text = widget.userData.weigth.toString();
+      // mobileController.text = widget.userData.mobile.toString();
+    });
+
+    print(widget.gUser.email.toString());
+  }
+
+  void validate() {
+    if (userNameController.text.length > 2) {
+      print('----------------true');
+    } else {
+      print('----------------false');
+    }
   }
 
   @override
@@ -36,9 +57,18 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('-------------------' + widget.startDate.toString());
-          //userDetail();
-          // Navigator.pop(context);
+          userDetail();
+
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      HomePage(widget.gUser, widget.signOut)));
+
+          print("------------date " +
+              dateTime.toString() +
+              '-------------' +
+              gender);
         },
       ),
       appBar: AppBar(
@@ -74,7 +104,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                 ),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.only(top: 8, right: 10),
+                    padding: EdgeInsets.only(top: 6, right: 6),
                     child: TextField(
                       controller: userNameController,
                       onChanged: (String val) {
@@ -98,7 +128,72 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                 Expanded(
                   child: Container(
                     padding: EdgeInsets.all(10),
-                    child: Text('Mobile'),
+                    child: Text('Gender'),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 50,
+                  ),
+                ),
+                Expanded(
+                    child: Container(
+                        child: DropdownButton<String>(
+                  items: <String>['Male', 'Female'].map((String gender) {
+                    return DropdownMenuItem<String>(
+                      value: gender,
+                      child: Text(gender),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    gender = value!;
+                  },
+                )))
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: Text('DOB'),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 50,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 8, right: 10),
+                    child: DateTimePicker(
+                      initialValue: '',
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                      dateLabelText: 'Date',
+                      onChanged: (val) {
+                        dateTime = DateTime.parse(val);
+                      },
+                      validator: (val) {
+                        print(val);
+                        return null;
+                      },
+                      onSaved: (val) => print(val),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: Text('Height'),
                   ),
                 ),
                 Expanded(
@@ -110,11 +205,10 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                   child: Container(
                     padding: EdgeInsets.only(top: 8, right: 10),
                     child: TextField(
-                      controller: mobileController,
-                      keyboardType: TextInputType.number,
+                      controller: heightController,
                       onChanged: (String val) {
                         setState(() {
-                          mobile = int.parse(val);
+                          height = double.parse(val);
                         });
                       },
                       decoration: InputDecoration(
@@ -125,15 +219,12 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 10,
-            ),
             Row(
               children: [
                 Expanded(
                   child: Container(
                     padding: EdgeInsets.all(10),
-                    child: Text('Weigth'),
+                    child: Text('weight'),
                   ),
                 ),
                 Expanded(
@@ -160,6 +251,42 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                 ),
               ],
             ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: Text('Height'),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 50,
+                  ),
+                ),
+                Expanded(
+                  child: Container(),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: Text('Goal'),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 50,
+                  ),
+                ),
+                Expanded(
+                  child: Container(),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -169,9 +296,12 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   Future<void> userDetail() async {
     collection.doc(widget.gUser.email).set({
       'name': name,
-      'mobile': mobile,
+      'height': height,
       'weigth': weigth,
-      'date': widget.startDate
+      'joindate': DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day),
+      'DOB': dateTime,
+      'gender': gender
     });
   }
 }
