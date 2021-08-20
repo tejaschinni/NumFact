@@ -87,7 +87,7 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
                 ? Container()
                 : Container(
                     child: Center(
-                        child: food['tcalories'] == 0
+                        child: food == null
                             ? Container(
                                 padding: EdgeInsets.all(10),
                                 child: Column(

@@ -1,3 +1,4 @@
+import 'package:caloriescounter/caloriescounter/setGoal.dart';
 import 'package:caloriescounter/caloriescounter/userRegisterPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
@@ -26,16 +27,21 @@ class _ProfilePageState extends State<ProfilePage> {
   double height = 0.0, vval = 0.5;
   double todaycal = 1700, today = 0.0;
   double _bmi = 0, _bmr = 0;
+  double defceintWegiht = 0.0, temp = 0.0, requreBmr = 0.0;
 
   String bmi = '0';
   double bmr = 0.0;
   String name = '', gender = '';
   Timestamp startTimestamp = Timestamp.now();
   late DateTime dob;
+  int selectedRadio = 0;
+  int selectedRadioTile = 0;
   DateTime startDateTime =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   final date2 =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  int _value = 0;
   @override
   void initState() {
     // TODO: implement initState
@@ -44,10 +50,39 @@ class _ProfilePageState extends State<ProfilePage> {
     heightController.text = height.toString();
     // userNameController.text = name;
     weigthController.text = weigth.toString();
-    setState(() {});
+    setState(() {
+      _value = 1;
+      selectedRadio = 0;
+      selectedRadioTile = 0;
+    });
     _readUserdetails();
     _read();
     _readUser();
+  }
+
+  setSelectedRadioTile(int val) {
+    setState(() {
+      selectedRadioTile = val;
+      if (val == 1) {
+        temp = 7000 * 2;
+        print('temp value ' + temp.toString());
+
+        defceintWegiht = temp / 7;
+
+        requreBmr = _bmr - defceintWegiht;
+        print('Deficent Weight ' + requreBmr.toString());
+      } else if (val == 2) {
+        temp = 7000 * 2;
+        print('temp value ' + temp.toString());
+
+        defceintWegiht = temp / 15;
+
+        requreBmr = _bmr - defceintWegiht;
+        print('Deficent Weight ' + requreBmr.toString());
+      } else {
+        print('----------------');
+      }
+    });
   }
 
   void _readUser() {
@@ -120,45 +155,11 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  // void _readUsercal() async {
-  //   setState(() {
-  //     FirebaseFirestore.instance
-  //         .collection("caloriecounter")
-  //         .doc(widget.gUser.email.toString())
-  //         .collection('food')
-  //         .doc(widget.selectedDate.toString())
-  //         .get()
-  //         .then((DocumentSnapshot value) {
-  //       setState(() {});
-  //       calculate();
-  //     });
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('User Data'),
-      //   actions: [
-      //     Center(
-      //       child: Container(
-      //         padding: EdgeInsets.all(5),
-      //         child: InkWell(
-      //           child: Icon(Icons.person),
-      //           onTap: () {
-      //             widget.signOut();
-      //             Navigator.pushReplacement(context,
-      //                 MaterialPageRoute(builder: (contex) => SigInPage()));
-      //           },
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // calculate();
           setState(() {
             print('-------' + name);
             print('weight---------' + weigth.toString());
@@ -225,21 +226,47 @@ class _ProfilePageState extends State<ProfilePage> {
                       '-' +
                       startDateTime.year.toString()),
                 ),
-                Column(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width / 2,
-                      // child: LinearProgressIndicator(
-                      //   value: getBMRratio(),
-                      //   minHeight: 20,
-                      //   backgroundColor: Colors.white,
-                      //   valueColor: AlwaysStoppedAnimation<Color>(
-                      //       getIndigatorColor(todaycal / bmr)),
-                      // ),
-                    ),
-                    Text(todaycal.toString() + ' / ' + bmr.toString())
-                  ],
+                ListTile(
+                  title: Text('Goal'),
+                  trailing: Icon(Icons.forward),
+                  onTap: () {
+                    //   Get.to(RadioWidgetDemo());
+                    Get.defaultDialog(
+                        barrierDismissible: false,
+                        title: 'Set Goal',
+                        content: Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              RadioListTile(
+                                value: 1,
+                                groupValue: selectedRadioTile,
+                                title: Text("1kg Loss in 7 days"),
+                                onChanged: (val) {
+                                  setSelectedRadioTile(val as int);
+                                },
+                                selected: true,
+                              ),
+                              RadioListTile(
+                                value: 2,
+                                groupValue: selectedRadioTile,
+                                title: Text("1kg loss in 15 days"),
+                                onChanged: (val) {
+                                  setSelectedRadioTile(val as int);
+                                },
+                                selected: false,
+                              ),
+                            ],
+                          ),
+                        ),
+                        textConfirm: "Confirm",
+                        onConfirm: () {
+                          selectGoal(_value);
+                          Get.back();
+                        });
+                  },
                 ),
+                Text(requreBmr.floor().toString())
               ],
             ),
           ),
@@ -280,4 +307,108 @@ class _ProfilePageState extends State<ProfilePage> {
   double getBMRratio() {
     return todaycal / bmr;
   }
+
+  void selectGoal(int val) {
+    setState(() {
+      if (_value == 1) {
+        print('Loss weight in 7 days');
+      } else if (_value == 2) {
+        print('Loss weight in 7 days');
+      } else if (_value == 3) {
+        print('Loss weight in 7 days');
+      } else {
+        print('not select');
+      }
+    });
+  }
+
+  // void lossWeight() {
+  //   setState(() {
+  //     // temp = 7000 * _weight.toDouble();
+  //     // print('temp value ' + temp.toString());
+
+  //     // defceintWegiht = temp / days;
+
+  //     // print('Deficent Weight ' + defceintWegiht.toString());
+
+  //     // print(_bmr - defceintWegiht);
+  //     if (exercise == 'No exercise') {
+  //       temp = 7000 * 2;
+  //       print('temp value ' + temp.toString());
+
+  //       defceintWegiht = temp / 7;
+
+  //       print('Deficent Weight ' + defceintWegiht.toString());
+  //       requreBmr = _bmr - defceintWegiht;
+
+  //       print(_bmr - defceintWegiht);
+  //     } else if (exercise == 'weekly 2-3 days exercise') {
+  //       temp = 3500 * 7;
+  //       print('temp value ' + temp.toString());
+
+  //       defceintWegiht = temp / 7;
+
+  //       print('Deficent Weight ' + defceintWegiht.toString());
+  //       requreBmr = _bmr - defceintWegiht;
+
+  //       print(requreBmr);
+  //     } else if (exercise == 'Daily exercise') {
+  //       temp = 2100 * 7;
+  //       print('temp value ' + temp.toString());
+
+  //       defceintWegiht = temp / 7;
+
+  //       print('Deficent Weight ' + defceintWegiht.toString());
+  //       requreBmr = _bmr - defceintWegiht;
+  //       print(_bmr - defceintWegiht);
+  //     } else {
+  //       print('Not selectef');
+  //     }
+  //   });
+  // }
+
+  // void gainWeight() {
+  //   setState(() {
+  //     // temp = 7000 * _weight.toDouble();
+  //     // print('temp value ' + temp.toString());
+
+  //     // defceintWegiht = temp / days;
+
+  //     // print('Deficent Weight ' + defceintWegiht.toString());
+
+  //     // print(_bmr - defceintWegiht);
+  //     if (exercise == 'No exercise') {
+  //       temp = 7000 * 7;
+  //       print('temp value ' + temp.toString());
+
+  //       defceintWegiht = temp / 7;
+
+  //       print('Deficent Weight ' + defceintWegiht.toString());
+  //       requreBmr = _bmr + defceintWegiht;
+
+  //       print(_bmr + defceintWegiht);
+  //     } else if (exercise == 'weekly 2-3 days exercise') {
+  //       temp = 3500 * 7;
+  //       print('temp value ' + temp.toString());
+
+  //       defceintWegiht = temp / 7;
+
+  //       print('Deficent Weight ' + defceintWegiht.toString());
+  //       requreBmr = _bmr + defceintWegiht;
+
+  //       print(requreBmr);
+  //     } else if (exercise == 'Daily exercise') {
+  //       temp = 2100 * 7;
+  //       print('temp value ' + temp.toString());
+
+  //       defceintWegiht = temp / 7;
+
+  //       print('Deficent Weight ' + defceintWegiht.toString());
+  //       requreBmr = _bmr + defceintWegiht;
+  //       print(_bmr + defceintWegiht);
+  //     } else {
+  //       print('Not selectef');
+  //     }
+  //   });
+  // }
 }
