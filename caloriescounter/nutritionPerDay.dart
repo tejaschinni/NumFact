@@ -30,8 +30,10 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    setState(() {
+      _read();
+    });
     _readUserdetails();
-    _read();
   }
 
   void _readUserdetails() async {
@@ -103,10 +105,9 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
                                         child: LinearProgressIndicator(
                                           value: 0.0,
                                           minHeight: 30,
-                                          valueColor: AlwaysStoppedAnimation<
-                                                  Color>(
-                                              getIndigatorColor(
-                                                  food['tcalories'] / _bmr)),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  getIndigatorColor(_bmr)),
                                         ),
                                       ),
                                     ),

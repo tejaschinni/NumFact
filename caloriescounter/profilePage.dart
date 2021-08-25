@@ -232,38 +232,100 @@ class _ProfilePageState extends State<ProfilePage> {
                   onTap: () {
                     //   Get.to(RadioWidgetDemo());
                     Get.defaultDialog(
-                        barrierDismissible: false,
-                        title: 'Set Goal',
-                        content: Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              RadioListTile(
-                                value: 1,
-                                groupValue: selectedRadioTile,
-                                title: Text("1kg Loss in 7 days"),
-                                onChanged: (val) {
-                                  setSelectedRadioTile(val as int);
-                                },
-                                selected: true,
-                              ),
-                              RadioListTile(
-                                value: 2,
-                                groupValue: selectedRadioTile,
-                                title: Text("1kg loss in 15 days"),
-                                onChanged: (val) {
-                                  setSelectedRadioTile(val as int);
-                                },
-                                selected: false,
-                              ),
-                            ],
-                          ),
+                      barrierDismissible: false,
+                      title: 'Set Goal',
+                      content: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      weightLossIn7Days();
+                                    });
+                                    Get.back();
+                                  },
+                                  child: Text(' 2KG Loss Weight in 7 Days')),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      weightLossIn15Days();
+                                    });
+                                    Get.back();
+                                  },
+                                  child: Text(' 2KG Loss Weight in 15 Days')),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      weightLossIn30Days();
+                                    });
+                                    Get.back();
+                                  },
+                                  child: Text(' 4KG Loss Weight in 30 Days')),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      weightGainIn7Days();
+                                    });
+                                    Get.back();
+                                  },
+                                  child: Text(' 2KG Gain Weight in 7 Days')),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      weightGainIn15Days();
+                                    });
+                                    Get.back();
+                                  },
+                                  child: Text(' 2KG Gain Weight in 15 Days')),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      weightGainIn30Days();
+                                    });
+                                    Get.back();
+                                  },
+                                  child: Text(' 4KG Gain Weight in 30 Days')),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                          ],
                         ),
-                        textConfirm: "Confirm",
-                        onConfirm: () {
-                          selectGoal(_value);
-                          Get.back();
-                        });
+                      ),
+                    );
                   },
                 ),
                 Text(requreBmr.floor().toString())
@@ -322,93 +384,39 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  // void lossWeight() {
-  //   setState(() {
-  //     // temp = 7000 * _weight.toDouble();
-  //     // print('temp value ' + temp.toString());
+  void weightLossIn7Days() {
+    temp = 7000 * 2;
+    defceintWegiht = temp / 7;
+    requreBmr = _bmr - defceintWegiht;
+  }
 
-  //     // defceintWegiht = temp / days;
+  void weightLossIn15Days() {
+    temp = 7000 * 2;
+    defceintWegiht = temp / 15;
+    requreBmr = _bmr - defceintWegiht;
+  }
 
-  //     // print('Deficent Weight ' + defceintWegiht.toString());
+  void weightLossIn30Days() {
+    temp = 7000 * 4;
+    defceintWegiht = temp / 30;
+    requreBmr = _bmr - defceintWegiht;
+  }
 
-  //     // print(_bmr - defceintWegiht);
-  //     if (exercise == 'No exercise') {
-  //       temp = 7000 * 2;
-  //       print('temp value ' + temp.toString());
+  void weightGainIn7Days() {
+    temp = 7000 * 2;
+    defceintWegiht = temp / 7;
+    requreBmr = _bmr + defceintWegiht;
+  }
 
-  //       defceintWegiht = temp / 7;
+  void weightGainIn15Days() {
+    temp = 7000 * 2;
+    defceintWegiht = temp / 15;
+    requreBmr = _bmr + defceintWegiht;
+  }
 
-  //       print('Deficent Weight ' + defceintWegiht.toString());
-  //       requreBmr = _bmr - defceintWegiht;
-
-  //       print(_bmr - defceintWegiht);
-  //     } else if (exercise == 'weekly 2-3 days exercise') {
-  //       temp = 3500 * 7;
-  //       print('temp value ' + temp.toString());
-
-  //       defceintWegiht = temp / 7;
-
-  //       print('Deficent Weight ' + defceintWegiht.toString());
-  //       requreBmr = _bmr - defceintWegiht;
-
-  //       print(requreBmr);
-  //     } else if (exercise == 'Daily exercise') {
-  //       temp = 2100 * 7;
-  //       print('temp value ' + temp.toString());
-
-  //       defceintWegiht = temp / 7;
-
-  //       print('Deficent Weight ' + defceintWegiht.toString());
-  //       requreBmr = _bmr - defceintWegiht;
-  //       print(_bmr - defceintWegiht);
-  //     } else {
-  //       print('Not selectef');
-  //     }
-  //   });
-  // }
-
-  // void gainWeight() {
-  //   setState(() {
-  //     // temp = 7000 * _weight.toDouble();
-  //     // print('temp value ' + temp.toString());
-
-  //     // defceintWegiht = temp / days;
-
-  //     // print('Deficent Weight ' + defceintWegiht.toString());
-
-  //     // print(_bmr - defceintWegiht);
-  //     if (exercise == 'No exercise') {
-  //       temp = 7000 * 7;
-  //       print('temp value ' + temp.toString());
-
-  //       defceintWegiht = temp / 7;
-
-  //       print('Deficent Weight ' + defceintWegiht.toString());
-  //       requreBmr = _bmr + defceintWegiht;
-
-  //       print(_bmr + defceintWegiht);
-  //     } else if (exercise == 'weekly 2-3 days exercise') {
-  //       temp = 3500 * 7;
-  //       print('temp value ' + temp.toString());
-
-  //       defceintWegiht = temp / 7;
-
-  //       print('Deficent Weight ' + defceintWegiht.toString());
-  //       requreBmr = _bmr + defceintWegiht;
-
-  //       print(requreBmr);
-  //     } else if (exercise == 'Daily exercise') {
-  //       temp = 2100 * 7;
-  //       print('temp value ' + temp.toString());
-
-  //       defceintWegiht = temp / 7;
-
-  //       print('Deficent Weight ' + defceintWegiht.toString());
-  //       requreBmr = _bmr + defceintWegiht;
-  //       print(_bmr + defceintWegiht);
-  //     } else {
-  //       print('Not selectef');
-  //     }
-  //   });
-  // }
+  void weightGainIn30Days() {
+    temp = 7000 * 4;
+    defceintWegiht = temp / 30;
+    requreBmr = _bmr + defceintWegiht;
+  }
 }
