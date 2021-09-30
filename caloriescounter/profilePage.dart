@@ -1,11 +1,14 @@
 import 'package:caloriescounter/caloriescounter/setGoal.dart';
 import 'package:caloriescounter/caloriescounter/userRegisterPage.dart';
+import 'package:caloriescounter/demo/dropDownDemo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:pie_chart/pie_chart.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ProfilePage extends StatefulWidget {
   Function signOut;
@@ -14,6 +17,25 @@ class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
+
+enum LegendShape { Circle, Rectangle }
+
+ChartType? _chartType = ChartType.disc;
+bool _showCenterText = true;
+double? _ringStrokeWidth = 32;
+double? _chartLegendSpacing = 32;
+
+bool _showLegendsInRow = false;
+bool _showLegends = true;
+
+bool _showChartValueBackground = true;
+bool _showChartValues = true;
+bool _showChartValuesInPercentage = false;
+bool _showChartValuesOutside = false;
+
+LegendShape? _legendShape = LegendShape.Circle;
+
+int key = 0;
 
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -42,6 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   int _value = 0;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -99,6 +122,27 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     });
   }
+
+  void chartData() {
+    double tcol = _bmr;
+    Map<String, double> dataMap = {
+      "SetBMR": tcol,
+      "Total calories": 3,
+    };
+    List<Color> colorList = [
+      Colors.red,
+      Colors.green,
+    ];
+  }
+
+  Map<String, double> dataMap = {
+    "SetBMR": 3,
+    "Total calories": 3,
+  };
+  List<Color> colorList = [
+    Colors.red,
+    Colors.green,
+  ];
 
   void calculate() async {
     setState(() {
@@ -230,105 +274,42 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: Text('Goal'),
                   trailing: Icon(Icons.forward),
                   onTap: () {
-                    //   Get.to(RadioWidgetDemo());
-                    Get.defaultDialog(
-                      barrierDismissible: false,
-                      title: 'Set Goal',
-                      content: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      weightLossIn7Days();
-                                    });
-                                    Get.back();
-                                  },
-                                  child: Text(' 2KG Loss Weight in 7 Days')),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      weightLossIn15Days();
-                                    });
-                                    Get.back();
-                                  },
-                                  child: Text(' 2KG Loss Weight in 15 Days')),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      weightLossIn30Days();
-                                    });
-                                    Get.back();
-                                  },
-                                  child: Text(' 4KG Loss Weight in 30 Days')),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      weightGainIn7Days();
-                                    });
-                                    Get.back();
-                                  },
-                                  child: Text(' 2KG Gain Weight in 7 Days')),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      weightGainIn15Days();
-                                    });
-                                    Get.back();
-                                  },
-                                  child: Text(' 2KG Gain Weight in 15 Days')),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      weightGainIn30Days();
-                                    });
-                                    Get.back();
-                                  },
-                                  child: Text(' 4KG Gain Weight in 30 Days')),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    Get.to(() => SetGoal(widget.gUser, widget.signOut));
                   },
                 ),
-                Text(requreBmr.floor().toString())
+                Text(requreBmr.floor().toString()),
+
+                PieChart(
+                  key: ValueKey(key),
+                  dataMap: dataMap,
+                  animationDuration: Duration(milliseconds: 800),
+                  chartLegendSpacing: _chartLegendSpacing!,
+                  chartRadius: MediaQuery.of(context).size.width / 3.2 > 300
+                      ? 300
+                      : MediaQuery.of(context).size.width / 3.2,
+                  colorList: colorList,
+                  initialAngleInDegree: 0,
+                  chartType: _chartType!,
+                  //centerText: _showCenterText ? "HYBRID" : null,
+                  legendOptions: LegendOptions(
+                    showLegendsInRow: _showLegendsInRow,
+                    showLegends: _showLegends,
+                    legendShape: _legendShape == LegendShape.Circle
+                        ? BoxShape.circle
+                        : BoxShape.rectangle,
+                    legendTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  chartValuesOptions: ChartValuesOptions(
+                    showChartValueBackground: _showChartValueBackground,
+                    showChartValues: _showChartValues,
+                    showChartValuesInPercentage: _showChartValuesInPercentage,
+                    showChartValuesOutside: _showChartValuesOutside,
+                  ),
+                  ringStrokeWidth: _ringStrokeWidth!,
+                  emptyColor: Colors.grey,
+                )
               ],
             ),
           ),

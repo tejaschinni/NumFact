@@ -59,7 +59,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
           child: Icon(Icons.add),
           onPressed: () {
             setState(() {
-              Get.to(SelectOptionTab(widget.gUser, _selectedDate,
+              Get.to(() => SelectOptionTab(widget.gUser, _selectedDate,
                   widget.signOut, userRecipieList, foods));
             });
           },

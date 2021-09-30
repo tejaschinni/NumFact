@@ -371,23 +371,46 @@ class _AddFoodState extends State<AddFood> {
       this.protiens = prot;
       this.fats = fat;
       this.name = name;
+
+      __cal = int.parse(cal.toString());
+      __gram = int.parse(grm.toString());
+      __carb = int.parse(carb.toString());
+      __fat = int.parse(fat.toString());
+      __prot = int.parse(prot.toString());
+
       nameController.text = name;
-      gramsController.text = grm.toString();
-      caloriesController.text = cal.toString();
-      carbonController.text = carb.toString();
-      fatsController.text = fat.toString();
-      protiensController.text = prot.toString();
+      gramsController.text = __gram.toString();
+      caloriesController.text = __cal.toString();
+      carbonController.text = __carb.toString();
+      fatsController.text = __fat.toString();
+      protiensController.text = __prot.toString();
     });
   }
 
   void onGramchange() {
-    int __gram = 0, __cal = 0, __carb = 0, __fat = 0, __prot = 0;
+    double val;
+
     setState(() {
-      __gram = int.parse(gramsController.text);
-      __cal = int.parse(caloriesController.text);
-      __fat = int.parse(fatsController.text);
-      __carb = int.parse(carbonController.text) + 2;
-      __prot = int.parse(protiensController.text);
+      if (__gram >= 5) {
+        val = __gram / grams;
+
+        __cal = ((calories) * val).toInt();
+        __fat = (fats * val).toInt();
+        __carb = (this.carbon * val).toInt();
+        __prot = (protiens * val).toInt();
+
+        caloriesController.text = __cal.toString();
+        carbonController.text = __carb.toString();
+        fatsController.text = __fat.toString();
+        protiensController.text = __prot.toString();
+
+        print(' ----------__cal-----' + __cal.toString());
+        print(' ----------__fat-----' + __fat.toString());
+        print(' ----------__carb-----' + __carb.toString());
+        print(' ----------__carb-----' + __prot.toString());
+      } else {
+        print('Enter Greater than 50');
+      }
     });
   }
 }

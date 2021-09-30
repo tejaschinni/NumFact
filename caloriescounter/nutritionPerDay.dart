@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class NutritionPerDay extends StatefulWidget {
   GoogleSignInAccount gUser;
@@ -14,14 +15,16 @@ class NutritionPerDay extends StatefulWidget {
 
 class _NutritionPerDayState extends State<NutritionPerDay> {
   bool flag = false;
-  int tcab = 0, tcal = 0, tfat = 0, tgram = 0, tprot = 0;
+  int tcab = 0, tcal = 0, tfat = 0, tgram = 0, tprot = 0, tcalories = 0;
 
-  double _bmi = 0, _bmr = 0;
+  double _bmi = 0, _bmr = 0, _setgoal = 0.0;
   int weigth = 0, age = 0;
-  double height = 0.0, vval = 0.5;
+  double height = 0.0, vval = 0.0;
   String name = '', gender = '';
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  DateTime currentdate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   CollectionReference collection =
       FirebaseFirestore.instance.collection('caloriecounter');
@@ -32,7 +35,9 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
     super.initState();
     setState(() {
       _read();
+      totalCalData();
     });
+
     _readUserdetails();
   }
 
@@ -50,6 +55,7 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
           gender = value["gender"];
           _bmi = double.parse(value["bmi"].toString());
           _bmr = double.parse(value["bmr"].toString());
+          _setgoal = double.parse(value["setgoal"].toString());
         });
       });
     });
@@ -59,93 +65,69 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-      child: SingleChildScrollView(
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('caloriecounter')
-              .doc(widget.gUser.email)
-              .collection('food')
-              .doc(widget.selectedDate.toString())
-              .snapshots(),
-          builder:
-              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            var food;
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('caloriecounter')
+            .doc(widget.gUser.email)
+            .collection('food')
+            .doc(widget.selectedDate.toString())
+            .snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          var food;
 
-            try {
-              food = snapshot.data!.data();
+          try {
+            food = snapshot.data!.data();
 
-              setState(() {
-                flag = false;
-              });
-            } catch (e) {
-              print("NO DATA");
-            }
-            return flag
-                ? Container()
-                : Container(
-                    child: Center(
-                        child: food == null
-                            ? Container(
-                                padding: EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      child: Text('Calories '),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10)),
-                                        child: LinearProgressIndicator(
-                                          value: 0.0,
-                                          minHeight: 30,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                  getIndigatorColor(_bmr)),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ))
-                            : Container(
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      child: Text('Calories'),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10)),
-                                        child: LinearProgressIndicator(
-                                          value: food['tcalories'] / _bmr,
-                                          minHeight: 30,
-                                          valueColor: AlwaysStoppedAnimation<
-                                                  Color>(
-                                              getIndigatorColor(
-                                                  food['tcalories'] / _bmr)),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(food['tcalories'].toString() +
-                                        '/' +
-                                        _bmr.floor().toString())
-                                  ],
-                                ),
-                              )),
-                  );
-          },
-        ),
+            setState(() {
+              flag = false;
+            });
+          } catch (e) {
+            print("NO DATA");
+          }
+          final List<ChartData> chartData = [
+            ChartData('Total Calories', food['tcalories']),
+            ChartData('BMR', _setgoal),
+          ];
+          final List<ChartData> chartData1 = [
+            ChartData('Total Calories', 0),
+            ChartData('BMR', _setgoal),
+          ];
+          //totalCalData();
+          return flag
+              ? Container()
+              : Container(
+                  child: Center(
+                      child: food['tcalories'] == 0
+                          ? Container(
+                              padding: EdgeInsets.all(10),
+                              child: SfCircularChart(series: <CircularSeries>[
+                                // Render pie chart
+                                PieSeries<ChartData, String>(
+                                  radius: '100%',
+                                  dataSource: chartData1,
+                                  xValueMapper: (ChartData data, _) => data.x,
+                                  yValueMapper: (ChartData data, _) => data.y,
+                                )
+                              ]))
+                          : Container(
+                              padding: EdgeInsets.all(10),
+                              child: SfCircularChart(series: <CircularSeries>[
+                                // Render pie chart
+                                PieSeries<ChartData, String>(
+                                  radius: '100%',
+                                  dataSource: chartData,
+                                  xValueMapper: (ChartData data, _) => data.x,
+                                  yValueMapper: (ChartData data, _) => data.y,
+                                )
+                              ]))),
+                );
+        },
       ),
     ));
   }
@@ -172,18 +154,18 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
             tfat = tfat + int.parse(item['fats'].toString());
             tprot = tprot + int.parse(item['protiens'].toString());
             tgram = tgram + int.parse(item['grams'].toString());
-            collection
-                .doc(widget.gUser.email)
-                .collection('food')
-                .doc(widget.selectedDate.toString())
-                .set({
-              'tcalories': tcal,
-              'tcrabs': tcab,
-              'tfat': tfat,
-              'tprotiens': tprot,
-              'tgram': tgram
-            });
           }
+        });
+        collection
+            .doc(widget.gUser.email)
+            .collection('food')
+            .doc(widget.selectedDate.toString())
+            .set({
+          'tcalories': tcal,
+          'tcrabs': tcab,
+          'tfat': tfat,
+          'tprotiens': tprot,
+          'tgram': tgram
         });
         print('Carbon Total  ' + tcab.toString());
         print('calories Total  ' + tcal.toString());
@@ -192,6 +174,29 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
       });
     } catch (e) {
       print(e);
+    }
+  }
+
+  void totalCalData() {
+    if (widget.selectedDate == currentdate) {
+      print("Dont do change ");
+    } else if (widget.selectedDate != currentdate) {
+      print("Change");
+      if (tcab != 0) {
+        collection
+            .doc(widget.gUser.email)
+            .collection('food')
+            .doc(widget.selectedDate.toString())
+            .set({
+          'tcalories': 0,
+          'tcrabs': 0,
+          'tfat': 0,
+          'tprotiens': 0,
+          'tgram': 0,
+        });
+      } else {
+        print("dont tc chnage ");
+      }
     }
   }
 
@@ -205,4 +210,13 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
     }
     return Colors.grey;
   }
+}
+
+class ChartData {
+  ChartData(
+    this.x,
+    this.y,
+  );
+  final String x;
+  final num y;
 }
