@@ -313,11 +313,11 @@ class _AddFoodState extends State<AddFood> {
         .doc()
         .set({
       'name': name,
-      'fats': fats,
-      'grams': grams,
-      'protiens': protiens,
-      'calories': calories,
-      'carbon': carbon
+      'fats': int.parse(fatsController.text),
+      'grams': int.parse(gramsController.text),
+      'protiens': int.parse(protiensController.text),
+      'calories': int.parse(caloriesController.text),
+      'carbon': int.parse(carbonController.text)
     });
   }
 
@@ -400,6 +400,7 @@ class _AddFoodState extends State<AddFood> {
         __prot = (protiens * val).toInt();
 
         caloriesController.text = __cal.toString();
+        gramsController.text = __gram.toString();
         carbonController.text = __carb.toString();
         fatsController.text = __fat.toString();
         protiensController.text = __prot.toString();

@@ -29,8 +29,7 @@ class _FlutterDateTimeDemoState extends State<FlutterDateTimeDemo> {
               child: FlutterDatePickerTimeline(
                 startDate: widget.date,
                 endDate: DateTime(DateTime.now().year, DateTime.now().month,
-                        DateTime.now().day)
-                    .add(Duration(days: 30)),
+                    DateTime.now().day),
                 initialSelectedDate: DateTime(DateTime.now().year,
                     DateTime.now().month, DateTime.now().day),
                 onSelectedDateChange: (dateTime) {

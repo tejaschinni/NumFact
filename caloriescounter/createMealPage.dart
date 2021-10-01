@@ -479,6 +479,7 @@ class _CreateMealPageState extends State<CreateMealPage> {
         carbonController.text = __carb.toString();
         fatsController.text = __fat.toString();
         protiensController.text = __prot.toString();
+        gramsController.text = __gram.toString();
 
         print(' ----------__cal-----' + __cal.toString());
         print(' ----------__fat-----' + __fat.toString());
@@ -493,11 +494,11 @@ class _CreateMealPageState extends State<CreateMealPage> {
   Future<void> addFood() async {
     firestore.doc(widget.gUser.email).collection('recipes').doc().set({
       'name': mealname,
-      'fats': tfat,
-      'grams': tgram,
-      'protiens': tprot,
-      'calories': tcal,
-      'carbon': tcab
+      'fats': int.parse(fatsController.text),
+      'grams': int.parse(gramsController.text),
+      'protiens': int.parse(protiensController.text),
+      'calories': int.parse(caloriesController.text),
+      'carbon': int.parse(carbonController.text)
     });
   }
 }

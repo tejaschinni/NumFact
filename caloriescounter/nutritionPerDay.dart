@@ -142,31 +142,46 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
           .collection('meals')
           .get()
           .then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
-          tcab = 0;
-          tcal = 0;
-          tfat = 0;
-          tgram = 0;
-          tprot = 0;
-          for (var item in querySnapshot.docs) {
-            tcab = tcab + int.parse(item['carbon'].toString());
-            tcal = tcal + int.parse(item['calories'].toString());
-            tfat = tfat + int.parse(item['fats'].toString());
-            tprot = tprot + int.parse(item['protiens'].toString());
-            tgram = tgram + int.parse(item['grams'].toString());
-          }
-        });
-        collection
-            .doc(widget.gUser.email)
-            .collection('food')
-            .doc(widget.selectedDate.toString())
-            .set({
-          'tcalories': tcal,
-          'tcrabs': tcab,
-          'tfat': tfat,
-          'tprotiens': tprot,
-          'tgram': tgram
-        });
+        if (querySnapshot.docs.isEmpty) {
+          collection
+              .doc(widget.gUser.email)
+              .collection('food')
+              .doc(widget.selectedDate.toString())
+              .set({
+            'tcalories': 0,
+            'tcrabs': 0,
+            'tfat': 0,
+            'tprotiens': 0,
+            'tgram': 0
+          });
+        } else {
+          querySnapshot.docs.forEach((doc) {
+            tcab = 0;
+            tcal = 0;
+            tfat = 0;
+            tgram = 0;
+            tprot = 0;
+            for (var item in querySnapshot.docs) {
+              tcab = tcab + int.parse(item['carbon'].toString());
+              tcal = tcal + int.parse(item['calories'].toString());
+              tfat = tfat + int.parse(item['fats'].toString());
+              tprot = tprot + int.parse(item['protiens'].toString());
+              tgram = tgram + int.parse(item['grams'].toString());
+            }
+          });
+          collection
+              .doc(widget.gUser.email)
+              .collection('food')
+              .doc(widget.selectedDate.toString())
+              .set({
+            'tcalories': tcal,
+            'tcrabs': tcab,
+            'tfat': tfat,
+            'tprotiens': tprot,
+            'tgram': tgram
+          });
+        }
+
         print('Carbon Total  ' + tcab.toString());
         print('calories Total  ' + tcal.toString());
         print('fats Total  ' + tfat.toString());
