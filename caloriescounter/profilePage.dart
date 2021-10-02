@@ -1,6 +1,6 @@
-import 'package:caloriescounter/caloriescounter/setGoal.dart';
-import 'package:caloriescounter/caloriescounter/userRegisterPage.dart';
-import 'package:caloriescounter/demo/dropDownDemo.dart';
+import 'package:caloriecounter/caloriecounter/setGoalPage.dart';
+import 'package:caloriecounter/caloriecounter/userRegisterPage.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/foundation.dart';
@@ -123,18 +123,6 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void chartData() {
-    double tcol = _bmr;
-    Map<String, double> dataMap = {
-      "SetBMR": tcol,
-      "Total calories": 3,
-    };
-    List<Color> colorList = [
-      Colors.red,
-      Colors.green,
-    ];
-  }
-
   Map<String, double> dataMap = {
     "SetBMR": 3,
     "Total calories": 3,
@@ -192,7 +180,9 @@ class _ProfilePageState extends State<ProfilePage> {
           gender = value["gender"];
           _bmi = double.parse(value["bmi"].toString());
           _bmr = double.parse(value["bmr"].toString());
-          startDateTime = value["DOB"];
+          Timestamp t = value["DOB"];
+          startDateTime =
+              DateTime.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch);
         });
         // calculate();
       });
@@ -279,37 +269,37 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Text(requreBmr.floor().toString()),
 
-                PieChart(
-                  key: ValueKey(key),
-                  dataMap: dataMap,
-                  animationDuration: Duration(milliseconds: 800),
-                  chartLegendSpacing: _chartLegendSpacing!,
-                  chartRadius: MediaQuery.of(context).size.width / 3.2 > 300
-                      ? 300
-                      : MediaQuery.of(context).size.width / 3.2,
-                  colorList: colorList,
-                  initialAngleInDegree: 0,
-                  chartType: _chartType!,
-                  //centerText: _showCenterText ? "HYBRID" : null,
-                  legendOptions: LegendOptions(
-                    showLegendsInRow: _showLegendsInRow,
-                    showLegends: _showLegends,
-                    legendShape: _legendShape == LegendShape.Circle
-                        ? BoxShape.circle
-                        : BoxShape.rectangle,
-                    legendTextStyle: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  chartValuesOptions: ChartValuesOptions(
-                    showChartValueBackground: _showChartValueBackground,
-                    showChartValues: _showChartValues,
-                    showChartValuesInPercentage: _showChartValuesInPercentage,
-                    showChartValuesOutside: _showChartValuesOutside,
-                  ),
-                  ringStrokeWidth: _ringStrokeWidth!,
-                  emptyColor: Colors.grey,
-                )
+                // PieChart(
+                //   key: ValueKey(key),
+                //   dataMap: dataMap,
+                //   animationDuration: Duration(milliseconds: 800),
+                //   chartLegendSpacing: _chartLegendSpacing!,
+                //   chartRadius: MediaQuery.of(context).size.width / 3.2 > 300
+                //       ? 300
+                //       : MediaQuery.of(context).size.width / 3.2,
+                //   colorList: colorList,
+                //   initialAngleInDegree: 0,
+                //   chartType: _chartType!,
+                //   //centerText: _showCenterText ? "HYBRID" : null,
+                //   legendOptions: LegendOptions(
+                //     showLegendsInRow: _showLegendsInRow,
+                //     showLegends: _showLegends,
+                //     legendShape: _legendShape == LegendShape.Circle
+                //         ? BoxShape.circle
+                //         : BoxShape.rectangle,
+                //     legendTextStyle: TextStyle(
+                //       fontWeight: FontWeight.bold,
+                //     ),
+                //   ),
+                //   chartValuesOptions: ChartValuesOptions(
+                //     showChartValueBackground: _showChartValueBackground,
+                //     showChartValues: _showChartValues,
+                //     showChartValuesInPercentage: _showChartValuesInPercentage,
+                //     showChartValuesOutside: _showChartValuesOutside,
+                //   ),
+                //   ringStrokeWidth: _ringStrokeWidth!,
+                //   emptyColor: Colors.grey,
+                // )
               ],
             ),
           ),

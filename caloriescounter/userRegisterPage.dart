@@ -1,4 +1,5 @@
-import 'package:caloriescounter/signInPage.dart';
+import 'package:caloriecounter/caloriecounter/viewPage.dart';
+import 'package:caloriecounter/signInPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
@@ -22,19 +23,13 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  String name = '';
+  String name = '', gender = '';
   int weigth = 0;
   int age = 0;
   double height = 0.0;
   double todaycal = 1700;
   String bmi = '0';
   var bmr = '';
-  String gender = 'Male';
-
-  var item = [
-    'Male',
-    'Female',
-  ];
 
   Timestamp startTimestamp = Timestamp.now();
   DateTime startDateTime =
@@ -80,6 +75,13 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
             calculate();
           });
           userDetail();
+          Get.off(ViewPage(widget.gUser, widget.signOut));
+
+          // Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (context) =>
+          //             ViewPage(widget.gUser, widget.signOut)));
 
           print("------------date " +
               dateTime.toString() +
@@ -95,7 +97,8 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
               child: Icon(Icons.person),
               onTap: () {
                 widget.signOut();
-                Get.off(SignInPage());
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (contex) => SigInPage()));
               },
             ),
           )
@@ -165,20 +168,18 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                     ),
                   ),
                   Expanded(
-                    child: DropdownButton(
-                      value: gender,
-                      icon: Icon(Icons.keyboard_arrow_down),
-                      items: item.map((String items) {
-                        return DropdownMenuItem(
-                            value: items, child: Text(items));
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          gender = value.toString();
-                        });
-                      },
-                    ),
-                  )
+                      child: Container(
+                          child: DropdownButton<String>(
+                    items: <String>['Male', 'Female'].map((String gender) {
+                      return DropdownMenuItem<String>(
+                        value: gender,
+                        child: Text(gender),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      gender = value!;
+                    },
+                  )))
                 ],
               ),
               SizedBox(
@@ -376,15 +377,6 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     }
   }
 
-  void dateselect(context) {
-    BuildContext dialogContext;
-    showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1, 1, 1900),
-        lastDate: DateTime(1, 1, 2030));
-  }
-
   Future<void> userDetail() async {
     collection.doc(widget.gUser.email).set({
       'name': name,
@@ -394,7 +386,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
           DateTime.now().year, DateTime.now().month, DateTime.now().day),
       'DOB': dateTime,
       'bmr': double.parse(bmr).floor(),
-      'setgoal': double.parse(bmr).floor(),
+      'goalbmr': double.parse(bmr).floor(),
       'bmi': double.parse(bmi).floor(),
       'gender': gender
     });

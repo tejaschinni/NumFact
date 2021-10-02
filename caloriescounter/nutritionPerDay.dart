@@ -98,6 +98,7 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
             ChartData('Total Calories', 0),
             ChartData('BMR', _setgoal),
           ];
+          _read1();
           //totalCalData();
           return flag
               ? Container()
@@ -130,6 +131,35 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
         },
       ),
     ));
+  }
+
+  void _read1() async {
+    try {
+      FirebaseFirestore.instance
+          .collection('caloriecounter')
+          .doc(widget.gUser.email)
+          .collection('food')
+          .doc(widget.selectedDate.toString())
+          .collection('meals')
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        if (querySnapshot.docs.isEmpty) {
+          collection
+              .doc(widget.gUser.email)
+              .collection('food')
+              .doc(widget.selectedDate.toString())
+              .set({
+            'tcalories': 0,
+            'tcrabs': 0,
+            'tfat': 0,
+            'tprotiens': 0,
+            'tgram': 0
+          });
+        } else {}
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _read() async {
