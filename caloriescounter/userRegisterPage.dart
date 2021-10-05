@@ -93,13 +93,17 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
         title: Text('User Profile'),
         actions: [
           Center(
-            child: InkWell(
-              child: Icon(Icons.person),
-              onTap: () {
-                widget.signOut();
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (contex) => SigInPage()));
-              },
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: InkWell(
+                child: Icon(Icons.person),
+                onTap: () {
+                  widget.signOut();
+                  Get.off(() => SigInPage());
+                  // Navigator.pushReplacement(context,
+                  //     MaterialPageRoute(builder: (contex) => SigInPage()));
+                },
+              ),
             ),
           )
         ],
@@ -375,6 +379,15 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     } catch (e) {
       print(e);
     }
+  }
+
+  void dateOfBirth(context) {
+    BuildContext dialogContext;
+    showDatePicker(
+        context: context,
+        initialDate: DateTime(1, 1, 1900),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now());
   }
 
   Future<void> userDetail() async {

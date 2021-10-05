@@ -18,25 +18,6 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-enum LegendShape { Circle, Rectangle }
-
-ChartType? _chartType = ChartType.disc;
-bool _showCenterText = true;
-double? _ringStrokeWidth = 32;
-double? _chartLegendSpacing = 32;
-
-bool _showLegendsInRow = false;
-bool _showLegends = true;
-
-bool _showChartValueBackground = true;
-bool _showChartValues = true;
-bool _showChartValuesInPercentage = false;
-bool _showChartValuesOutside = false;
-
-LegendShape? _legendShape = LegendShape.Circle;
-
-int key = 0;
-
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -268,38 +249,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   },
                 ),
                 Text(requreBmr.floor().toString()),
-
-                // PieChart(
-                //   key: ValueKey(key),
-                //   dataMap: dataMap,
-                //   animationDuration: Duration(milliseconds: 800),
-                //   chartLegendSpacing: _chartLegendSpacing!,
-                //   chartRadius: MediaQuery.of(context).size.width / 3.2 > 300
-                //       ? 300
-                //       : MediaQuery.of(context).size.width / 3.2,
-                //   colorList: colorList,
-                //   initialAngleInDegree: 0,
-                //   chartType: _chartType!,
-                //   //centerText: _showCenterText ? "HYBRID" : null,
-                //   legendOptions: LegendOptions(
-                //     showLegendsInRow: _showLegendsInRow,
-                //     showLegends: _showLegends,
-                //     legendShape: _legendShape == LegendShape.Circle
-                //         ? BoxShape.circle
-                //         : BoxShape.rectangle,
-                //     legendTextStyle: TextStyle(
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                //   chartValuesOptions: ChartValuesOptions(
-                //     showChartValueBackground: _showChartValueBackground,
-                //     showChartValues: _showChartValues,
-                //     showChartValuesInPercentage: _showChartValuesInPercentage,
-                //     showChartValuesOutside: _showChartValuesOutside,
-                //   ),
-                //   ringStrokeWidth: _ringStrokeWidth!,
-                //   emptyColor: Colors.grey,
-                // )
               ],
             ),
           ),

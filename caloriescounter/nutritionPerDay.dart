@@ -49,7 +49,7 @@ class _NutritionPerDayState extends State<NutritionPerDay> {
           .get()
           .then((DocumentSnapshot value) {
         setState(() {
-          name = value["name"].toString();
+          name = value["name"];
           weigth = value["weigth"];
           height = value["height"];
           gender = value["gender"];

@@ -13,8 +13,9 @@ class AddFoodFromRecipie extends StatefulWidget {
   DateTime selectedDate;
   List<Recipies> userRecipeList;
   List<Food> food;
+  Function _readUserRecipeList;
   AddFoodFromRecipie(this.gUser, this.selectedDate, this.signOut,
-      this.userRecipeList, this.food);
+      this.userRecipeList, this.food, this._readUserRecipeList);
 
   @override
   _AddFoodFromRecipieState createState() => _AddFoodFromRecipieState();
@@ -59,8 +60,13 @@ class _AddFoodFromRecipieState extends State<AddFoodFromRecipie> {
                   widget.userRecipeList),
               LibraryFodd(widget.gUser, widget.selectedDate, widget.signOut,
                   widget.food),
-              CreateMealPage(widget.food, widget.gUser, widget.selectedDate,
-                  widget.signOut, widget.userRecipeList),
+              CreateMealPage(
+                  widget.food,
+                  widget.gUser,
+                  widget.selectedDate,
+                  widget.signOut,
+                  widget.userRecipeList,
+                  widget._readUserRecipeList),
             ]),
           ),
         ));

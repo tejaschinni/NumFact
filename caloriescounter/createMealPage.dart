@@ -11,8 +11,9 @@ class CreateMealPage extends StatefulWidget {
   DateTime selectedDate;
   List<Food> foodList;
   List<Recipies> userRecipeList;
+  Function _readUserRecipeList;
   CreateMealPage(this.foodList, this.gUser, this.selectedDate, this.signOut,
-      this.userRecipeList);
+      this.userRecipeList, this._readUserRecipeList);
 
   @override
   _CreateMealPageState createState() => _CreateMealPageState();
@@ -499,5 +500,6 @@ class _CreateMealPageState extends State<CreateMealPage> {
       'calories': int.parse(caloriesController.text),
       'carbon': int.parse(carbonController.text)
     });
+    widget._readUserRecipeList();
   }
 }

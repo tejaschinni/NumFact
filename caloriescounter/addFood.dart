@@ -1,5 +1,5 @@
 import 'package:caloriecounter/data/recipies.dart';
-import 'package:caloriecounter/demo/listbiewSearchPage.dart';
+import 'package:caloriecounter/demo/recipiesListSearchPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:caloriecounter/caloriecounter/addFromRecipe.dart';
 import 'package:caloriecounter/caloriecounter/nutritionPerDay.dart';
-import 'package:caloriecounter/caloriecounter/userRegisterPage.dart';
 import 'package:caloriecounter/data/food.dart';
 import 'package:caloriecounter/data/recipies.dart';
 import 'package:flutter/material.dart';
@@ -51,10 +50,10 @@ class _ViewPageState extends State<ViewPage> {
     _read();
     _readUserRecipeList();
     getList(http.Client());
-    _readUser();
   }
 
   void _readUserRecipeList() async {
+    userRecipieList.clear();
     firestore
         .collection("caloriecounter")
         .doc(widget.gUser.email)
@@ -87,26 +86,6 @@ class _ViewPageState extends State<ViewPage> {
           .doc(document)
           .delete();
       userRecipieList.removeAt(document);
-    });
-  }
-
-  void _readUser() {
-    FirebaseFirestore.instance
-        .collection("caloriecounter")
-        .doc(widget.gUser.email.toString())
-        .get()
-        .then((value) {
-      if (value.data() == null) {
-        setState(() {
-          isWorking = false;
-        });
-        Get.off(UserRegisterPage(widget.gUser, widget.signOut));
-        // Navigator.pushReplacement(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (contex) =>
-        //             UserRegisterPage(widget.gUser, widget.signOut)));
-      }
     });
   }
 
@@ -159,20 +138,22 @@ class _ViewPageState extends State<ViewPage> {
           ),
           onPressed: () {
             setState(() {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AddFoodFromRecipie(
-                          widget.gUser,
-                          _selectedDate,
-                          widget.signOut,
-                          userRecipieList,
-                          foods)));
+              Get.to(() => AddFoodFromRecipie(widget.gUser, _selectedDate,
+                  widget.signOut, userRecipieList, foods, _readUserRecipeList));
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => AddFoodFromRecipie(
+              //             widget.gUser,
+              //             _selectedDate,
+              //             widget.signOut,
+              //             userRecipieList,
+              //             foods)));
             });
           },
         ),
         body:
-            // isWorking
+            //  isWorking
             //     ? Center(
             //         child: CircularProgressIndicator(),
             //       )

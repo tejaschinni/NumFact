@@ -1,6 +1,7 @@
 import 'package:caloriecounter/caloriecounter/viewPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AddRecipePage extends StatefulWidget {
@@ -276,11 +277,12 @@ class _AddRecipePageState extends State<AddRecipePage> {
           calories = 0;
           carbon = 0;
 
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      ViewPage(widget.gUser, widget.signOut)));
+          Get.to(() => ViewPage(widget.gUser, widget.signOut));
+          // Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (context) =>
+          //             ViewPage(widget.gUser, widget.signOut)));
 
           // if (validator) {
           //   print('name is not given ');
