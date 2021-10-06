@@ -277,6 +277,7 @@ class _AddFoodState extends State<AddFood> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
+          heroTag: 'botton1',
           child: Icon(Icons.add),
           onPressed: () {
             setState(() {

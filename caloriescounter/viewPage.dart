@@ -130,190 +130,202 @@ class _ViewPageState extends State<ViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.green,
-          child: Icon(
-            Icons.add,
+    return WillPopScope(
+      onWillPop: () => _onWillPop(),
+      child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.green,
+            child: Icon(
+              Icons.add,
+            ),
+            onPressed: () {
+              setState(() {
+                Get.to(() => AddFromRecipie(
+                    widget.gUser,
+                    _selectedDate,
+                    widget.signOut,
+                    userRecipieList,
+                    foods,
+                    _readUserRecipeList));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => AddFoodFromRecipie(
+                //             widget.gUser,
+                //             _selectedDate,
+                //             widget.signOut,
+                //             userRecipieList,
+                //             foods)));
+              });
+            },
           ),
-          onPressed: () {
-            setState(() {
-              Get.to(() => AddFoodFromRecipie(widget.gUser, _selectedDate,
-                  widget.signOut, userRecipieList, foods, _readUserRecipeList));
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => AddFoodFromRecipie(
-              //             widget.gUser,
-              //             _selectedDate,
-              //             widget.signOut,
-              //             userRecipieList,
-              //             foods)));
-            });
-          },
-        ),
-        body:
-            //  isWorking
-            //     ? Center(
-            //         child: CircularProgressIndicator(),
-            //       )
-            //     :
-            DelayedDisplay(
-                delay: Duration(seconds: 1),
-                child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('caloriecounter')
-                      .doc(widget.gUser.email)
-                      .collection('food')
-                      .doc(_selectedDate.toString())
-                      .collection('meals')
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    var food;
+          body:
+              //  isWorking
+              //     ? Center(
+              //         child: CircularProgressIndicator(),
+              //       )
+              //     :
+              DelayedDisplay(
+                  delay: Duration(seconds: 1),
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('caloriecounter')
+                        .doc(widget.gUser.email)
+                        .collection('food')
+                        .doc(_selectedDate.toString())
+                        .collection('meals')
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      var food;
 
-                    try {
-                      food = snapshot.data!.docs;
+                      try {
+                        food = snapshot.data!.docs;
 
-                      setState(() {
-                        flag = false;
-                      });
-                    } catch (e) {
-                      print("NO DATA");
-                    }
-                    if (flag) {
-                      return Container();
-                    } else {
-                      return Column(
-                        children: [
-                          Expanded(
-                              flex: 1,
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                child: NutritionPerDay(
-                                    widget.gUser, _selectedDate),
-                              )),
-                          Expanded(
-                              child: Container(
-                                  child: FlutterDateTimeDemo(
-                                      startDateTime, setDateTime))),
-                          Expanded(
-                              flex: 4,
-                              child: SmartRefresher(
-                                controller: _refreshController,
-                                onRefresh: _onRefresh,
-                                onLoading: _onLoading,
+                        setState(() {
+                          flag = false;
+                        });
+                      } catch (e) {
+                        print("NO DATA");
+                      }
+                      if (flag) {
+                        return Container();
+                      } else {
+                        return Column(
+                          children: [
+                            Expanded(
+                                flex: 1,
                                 child: Container(
                                   padding: EdgeInsets.all(10),
-                                  child: food.length == 0
-                                      ? Container(
-                                          child: Center(
-                                              child: Text('NO DATA Found')))
-                                      : ListView.builder(
-                                          itemCount: food.length,
-                                          itemBuilder: (context, index) {
-                                            return Container(
-                                              padding: EdgeInsets.all(2),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      width: 0.2,
-                                                      color: Colors.grey)),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                      flex: 2,
+                                  child: NutritionPerDay(
+                                      widget.gUser, _selectedDate),
+                                )),
+                            Expanded(
+                                child: Container(
+                                    child: FlutterDateTimeDemo(
+                                        startDateTime, setDateTime))),
+                            Expanded(
+                                flex: 4,
+                                child: SmartRefresher(
+                                  controller: _refreshController,
+                                  onRefresh: _onRefresh,
+                                  onLoading: _onLoading,
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: food.length == 0
+                                        ? Container(
+                                            child: Center(
+                                                child: Text('NO DATA Found')))
+                                        : ListView.builder(
+                                            itemCount: food.length,
+                                            itemBuilder: (context, index) {
+                                              return Container(
+                                                padding: EdgeInsets.all(2),
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        width: 0.2,
+                                                        color: Colors.grey)),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                        flex: 2,
+                                                        child: Container(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    12),
+                                                            child: RichText(
+                                                              text: TextSpan(
+                                                                text: food[index]
+                                                                        ['name']
+                                                                    .toString(),
+                                                                style: DefaultTextStyle.of(
+                                                                        context)
+                                                                    .style,
+                                                                children: <
+                                                                    TextSpan>[
+                                                                  TextSpan(
+                                                                      text: '\n ' +
+                                                                          food[index]['grams']
+                                                                              .toString() +
+                                                                          ' g',
+                                                                      style:
+                                                                          TextStyle()),
+                                                                ],
+                                                              ),
+                                                            ))),
+                                                    Expanded(
                                                       child: Container(
-                                                          padding:
-                                                              EdgeInsets.all(
-                                                                  12),
-                                                          child: RichText(
-                                                            text: TextSpan(
-                                                              text: food[index]
-                                                                      ['name']
-                                                                  .toString(),
-                                                              style: DefaultTextStyle
-                                                                      .of(context)
-                                                                  .style,
-                                                              children: <
-                                                                  TextSpan>[
-                                                                TextSpan(
-                                                                    text: '\n ' +
-                                                                        food[index]['grams']
-                                                                            .toString() +
-                                                                        ' g',
-                                                                    style:
-                                                                        TextStyle()),
-                                                              ],
-                                                            ),
-                                                          ))),
-                                                  Expanded(
-                                                    child: Container(
-                                                      alignment:
-                                                          Alignment.centerRight,
-                                                      padding:
-                                                          EdgeInsets.all(12),
-                                                      child: RichText(
-                                                        textAlign:
-                                                            TextAlign.right,
-                                                        text: TextSpan(
-                                                          text: food[index]
-                                                                  ['calories']
-                                                              .toString(),
-                                                          style: DefaultTextStyle
-                                                                  .of(context)
-                                                              .style,
-                                                          children: <TextSpan>[
-                                                            TextSpan(
-                                                                text: '\nC: ' +
-                                                                    food[index][
-                                                                            'carbon']
-                                                                        .toString(),
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .grey)),
-                                                            TextSpan(
-                                                                text: '\t F: ' +
-                                                                    food[index][
-                                                                            'fats']
-                                                                        .toString(),
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .orange)),
-                                                            TextSpan(
-                                                                text: '\t P: ' +
-                                                                    food[index][
-                                                                            'protiens']
-                                                                        .toString(),
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .red))
-                                                          ],
+                                                        alignment: Alignment
+                                                            .centerRight,
+                                                        padding:
+                                                            EdgeInsets.all(12),
+                                                        child: RichText(
+                                                          textAlign:
+                                                              TextAlign.right,
+                                                          text: TextSpan(
+                                                            text: food[index]
+                                                                    ['calories']
+                                                                .toString(),
+                                                            style: DefaultTextStyle
+                                                                    .of(context)
+                                                                .style,
+                                                            children: <
+                                                                TextSpan>[
+                                                              TextSpan(
+                                                                  text: '\nC: ' +
+                                                                      food[index]
+                                                                              [
+                                                                              'carbon']
+                                                                          .toString(),
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .grey)),
+                                                              TextSpan(
+                                                                  text: '\t F: ' +
+                                                                      food[index]
+                                                                              [
+                                                                              'fats']
+                                                                          .toString(),
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .orange)),
+                                                              TextSpan(
+                                                                  text: '\t P: ' +
+                                                                      food[index]
+                                                                              [
+                                                                              'protiens']
+                                                                          .toString(),
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Colors
+                                                                          .red))
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }),
-                                ),
-                              )),
-                        ],
-                      );
-                    }
-                  },
-                )));
+                                                  ],
+                                                ),
+                                              );
+                                            }),
+                                  ),
+                                )),
+                          ],
+                        );
+                      }
+                    },
+                  ))),
+    );
   }
 
   void setDateTime(DateTime _selectedValue) {
@@ -334,5 +346,26 @@ class _ViewPageState extends State<ViewPage> {
           .map((data) => Food.fromJson(data))
           .toList();
     });
+  }
+
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('Are you sure?'),
+            content: new Text('Do you want to exit an App'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: new Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: new Text('Yes'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
   }
 }

@@ -1,3 +1,5 @@
+import 'package:caloriecounter/caloriecounter/addFromRecipe.dart';
+import 'package:caloriecounter/caloriecounter/addRecipePage.dart';
 import 'package:caloriecounter/data/food.dart';
 import 'package:caloriecounter/data/recipies.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,6 +65,7 @@ class _CreateMealPageState extends State<CreateMealPage> {
       print('--------------true');
       addFood();
       Get.back();
+      DefaultTabController.of(context)!.animateTo(0);
     } else {
       print('--------------false');
     }
