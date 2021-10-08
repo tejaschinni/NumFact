@@ -21,7 +21,8 @@ class CreateMealPage extends StatefulWidget {
   _CreateMealPageState createState() => _CreateMealPageState();
 }
 
-class _CreateMealPageState extends State<CreateMealPage> {
+class _CreateMealPageState extends State<CreateMealPage>
+    with SingleTickerProviderStateMixin {
   List<Food> ingredent = [];
   List<Food> findFood = [];
   List<Food> temp = [];
@@ -53,19 +54,23 @@ class _CreateMealPageState extends State<CreateMealPage> {
   String name = ' ', mealname = '';
   String grams = ' ', carbon = ' ', fats = ' ', protiens = ' ', calories = ' ';
 
+  late TabController _controller;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     findFood = widget.foodList;
+    // _controller = TabController(length: 2, vsync: this);
+    // _controller.addListener(() {
+    //   print(_controller.index);
+    // });
   }
 
   void validate() {
     if (mealNameController.text.length > 2) {
       print('--------------true');
       addFood();
-      Get.back();
-      DefaultTabController.of(context)!.animateTo(0);
     } else {
       print('--------------false');
     }
@@ -495,7 +500,8 @@ class _CreateMealPageState extends State<CreateMealPage> {
   }
 
   Future<void> addFood() async {
-    firestore.doc(widget.gUser.email).collection('recipes').doc().set({
+    DocumentReference ref =
+        await firestore.doc(widget.gUser.email).collection('recipes').add({
       'name': mealname,
       'fats': int.parse(fatsController.text),
       'grams': int.parse(gramsController.text),
@@ -503,6 +509,81 @@ class _CreateMealPageState extends State<CreateMealPage> {
       'calories': int.parse(caloriesController.text),
       'carbon': int.parse(carbonController.text)
     });
-    widget._readUserRecipeList();
+    // firestore.doc(widget.gUser.email).collection('recipes').doc().setData({
+    //   'name': mealname,
+    //   'fats': int.parse(fatsController.text),
+    //   'grams': int.parse(gramsController.text),
+    //   'protiens': int.parse(protiensController.text),
+    //   'calories': int.parse(caloriesController.text),
+    //   'carbon': int.parse(carbonController.text)
+    // });
+
+    setState(() {
+      Recipies r = Recipies(
+          int.parse(caloriesController.text),
+          int.parse(carbonController.text),
+          int.parse(fatsController.text),
+          int.parse(gramsController.text),
+          mealname,
+          int.parse(protiensController.text),
+          ref);
+      widget.userRecipeList.add(r);
+    });
+
+    Get.back();
+    DefaultTabController.of(context)!.animateTo(0);
+    // widget._readUserRecipeList();
+
+    // firestore
+    //     .doc(widget.gUser.email)
+    //     .collection('recipes')
+    //     .get()
+    //     .then((querySnapshot) {
+    //   querySnapshot.docs.forEach((result) {
+    //     setState(() {
+    //       widget.userRecipeList.clear();
+    //       int cal =
+    //           int.parse((result.data() as dynamic)['calories'].toString());
+    //       int carb = int.parse((result.data() as dynamic)['carbon'].toString());
+    //       int fat = int.parse((result.data() as dynamic)['fats'].toString());
+    //       int gram = int.parse((result.data() as dynamic)['grams'].toString());
+    //       int pro =
+    //           int.parse((result.data() as dynamic)['protiens'].toString());
+    //       print(cal);
+    //       Recipies r = Recipies(cal, carb, fat, gram,
+    //           (result.data() as dynamic)['name'], pro, result.reference);
+    //       widget.userRecipeList.add(r);
+    //     });
+    //   });
+    // });
+
+    // widget._readUserRecipeList();
+    // setState(() {
+    //   Recipies r =
+    //       Recipies(calories, carbon, fats, grams, name, protines, reference);
+    //   widget.userRecipeList.add(r);
+    // });
   }
+
+  // void readyUserList() {
+  //   firestore
+  //       .doc(widget.gUser.email)
+  //       .collection('recipes')
+  //       .get()
+  //       .then((querySnapshot) {
+  //     querySnapshot.docs.forEach((result) {
+  //       setState(() {
+  //         widget.userRecipeList.clear();
+  //         int cal =
+  //             int.parse((result.data() as dynamic)['calories'].toString());
+  //         int carb = int.parse((result.data() as dynamic)['carbon'].toString());
+  //         int fat = int.parse((result.data() as dynamic)['fats'].toString());
+  //         int gram = int.parse((result.data() as dynamic)['grams'].toString());
+  //         int pro =
+  //             int.parse((result.data() as dynamic)['protiens'].toString());
+  //         print(cal);
+  //       });
+  //     });
+  //   });
+  // }
 }
